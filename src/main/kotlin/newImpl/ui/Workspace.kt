@@ -134,9 +134,9 @@ private fun ContextItems(
             )
         }),
     ContextMenuItem(
-        label = "Element to snippet converter",
+        label = "PSI to snippet",
         onClick = {
-            val nodeName = vm.graph.current.suggestNewNodeName("Element to snippet converter")
+            val nodeName = vm.graph.current.suggestNewNodeName("PSI to snippet")
             applyChanges(
                 listOf(
                     AddNode(
