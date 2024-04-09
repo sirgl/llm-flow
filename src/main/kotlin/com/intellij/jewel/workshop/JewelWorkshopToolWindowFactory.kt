@@ -12,7 +12,7 @@ class JewelWorkshopToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.addComposeTab("Refactoring") {
             SwingBridgeTheme {
-                GraphPanel()
+                GraphPanel(project)
             }
         }
     }

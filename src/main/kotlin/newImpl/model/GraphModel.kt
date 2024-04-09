@@ -101,6 +101,8 @@ sealed class NodeContent
 
 data object InputElement : NodeContent()
 
+data object Printer : NodeContent()
+
 data object FindUsages : NodeContent()
 
 data object ElementToSnippetConverter : NodeContent()

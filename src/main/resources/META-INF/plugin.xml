@@ -13,5 +13,8 @@
                     canCloseContents="true"
                     icon="JewelIcons.ToolWindowIcon"
                     factoryClass="com.intellij.jewel.workshop.JewelWorkshopToolWindowFactory"/>
+        <intentionAction>
+            <className>actions.AddInputAction</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>

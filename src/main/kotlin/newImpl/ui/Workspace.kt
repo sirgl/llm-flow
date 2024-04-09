@@ -79,7 +79,7 @@ private fun ContextItems(
                         name = nodeName,
                         position = vm.cursorPosition.value,
                         inputPorts = listOf(),
-                        outputPorts = listOf("File", "PSI element"),
+                        outputPorts = listOf("PSI element"),
                         content = InputElement
                     )
                 )
@@ -95,8 +95,24 @@ private fun ContextItems(
                         name = nodeName,
                         position = vm.cursorPosition.value,
                         inputPorts = listOf("PSI definition"),
-                        outputPorts = listOf("File", "PSI reference"),
+                        outputPorts = listOf("PSI references"),
                         content = FindUsages
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Debug printer",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Debug printer")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("text"),
+                        outputPorts = listOf(),
+                        content = Printer
                     )
                 )
             )
@@ -110,7 +126,7 @@ private fun ContextItems(
                     AddNode(
                         name = nodeName,
                         position = vm.cursorPosition.value,
-                        inputPorts = listOf("File", "New text"),
+                        inputPorts = listOf( "New text"),
                         outputPorts = listOf("Diff"),
                         content = DiffMaker
                     )
@@ -142,7 +158,7 @@ private fun ContextItems(
                     AddNode(
                         name = nodeName,
                         position = vm.cursorPosition.value,
-                        inputPorts = listOf("File", "PSI element"),
+                        inputPorts = listOf("PSI element"),
                         outputPorts = listOf("Snippet"),
                         content = ElementToSnippetConverter
                     )
