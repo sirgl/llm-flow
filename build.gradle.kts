@@ -20,6 +20,7 @@ intellij {
 repositories {
     mavenCentral()
     maven("https://packages.jetbrains.team/maven/p/kpm/public")
+
 }
 
 configurations.all {
@@ -40,6 +41,7 @@ dependencies {
     implementation("org.jetbrains.jewel:jewel-ide-laf-bridge:0.8.1-ij-232")
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.8.1")
     implementation(compose.desktop.currentOs)
+    implementation("io.lacuna:bifurcan:0.2.0-alpha7")
 }
 
 tasks {
