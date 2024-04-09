@@ -25,6 +25,7 @@ import newImpl.vm.GraphVM
 import newImpl.vm.InputPortVM
 import newImpl.vm.NodeVM
 import newImpl.vm.OutputPortVM
+import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
 import org.jetbrains.jewel.ui.component.DefaultButton
 import org.jetbrains.jewel.ui.component.Divider
@@ -34,18 +35,34 @@ import java.util.UUID
 import kotlin.math.roundToInt
 
 @Composable
-fun Node(isDebug: Boolean, vm: NodeVM, graphVM: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit, dragModel: DragModel) {
+fun Node(
+    isDebug: Boolean,
+    vm: NodeVM,
+    graphVM: GraphVM,
+    applyChanges: (changes: List<GraphChange>) -> Unit,
+    dragModel: DragModel
+) {
     Box(
         Modifier
             .offset { IntOffset(vm.getOffset().x.roundToInt(), vm.getOffset().y.roundToInt()) }
             .width(150.dp)
             .clip(RoundedCornerShape(5.dp))
-            .background(Color.LightGray)
+            .background(JewelTheme.globalColors.paneBackground)
             .border(1.dp, Color.Black, RoundedCornerShape(5.dp))
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    applyChanges(listOf(UpdateNode(newImpl.model.Node(vm.nodeId, vm.getName(), vm.getOffset() + dragAmount))))
+                    applyChanges(
+                        listOf(
+                            UpdateNode(
+                                newImpl.model.Node(
+                                    vm.nodeId,
+                                    vm.getName(),
+                                    vm.getOffset() + dragAmount
+                                )
+                            )
+                        )
+                    )
                 }
             }
     ) {
@@ -68,8 +85,11 @@ fun Node(isDebug: Boolean, vm: NodeVM, graphVM: GraphVM, applyChanges: (changes:
                 if (content is AITransformer) {
                     // TODO here should be just a link to edit
                     var prompt by remember { mutableStateOf(content.prompt) }
-                    TextField(value = prompt, { prompt = it })
-                    DefaultButton(onClick = {
+                    TextField(
+                        value = prompt,
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 10.dp),
+                        onValueChange = { prompt = it })
+                    DefaultButton(modifier = Modifier.fillMaxWidth(), onClick = {
                         applyChanges(listOf(ReplaceContent(vm.nodeId, AITransformer(prompt))))
                     }) {
                         Text("Save")

@@ -14,9 +14,6 @@ fun GraphPanel() {
     Workspace(vm = vm, applyChanges = { changes ->
         graph.update(changes)
     })
-//    Box(Modifier.padding(8.dp)) {
-//        Text("Hello Compose!")
-//    }
 }
 
 @Preview

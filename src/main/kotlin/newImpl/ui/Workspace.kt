@@ -35,80 +35,7 @@ fun Workspace(vm: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit) {
                 Text("Nodes: " + vm.nodes.value.size, fontSize = 10.sp)
             }
             ContextMenuArea(items = {
-                listOf(
-                    ContextMenuItem(
-                        label = "AI transformer",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("AI transformer")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf("Text"),
-                                outputPorts = listOf("Output"),
-                                content = AITransformer("My prompt")
-                            )))
-                        }),
-                    ContextMenuItem(
-                        label = "Input PSI element",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("Input PSI element")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf(),
-                                outputPorts = listOf("File", "PSI element"),
-                                content = InputElement
-                            )))
-                        }),
-                    ContextMenuItem(
-                        label = "Find usages",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("Find usages")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf("PSI definition"),
-                                outputPorts = listOf("File", "PSI reference"),
-                                content = FindUsages
-                            )))
-                        }),
-                    ContextMenuItem(
-                        label = "Diff converter",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("Diff converter")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf("File", "New text"),
-                                outputPorts = listOf("Diff"),
-                                content = DiffMaker
-                            )))
-                        }),
-                    ContextMenuItem(
-                        label = "Diff applier",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("Diff applier")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf("Diff"),
-                                outputPorts = listOf(),
-                                content = DiffApplier
-                            )))
-                        }),
-                    ContextMenuItem(
-                        label = "Element to snippet converter",
-                        onClick = {
-                            val nodeName = vm.graph.current.suggestNewNodeName("Element to snippet converter")
-                            applyChanges(listOf(AddNode(
-                                name = nodeName,
-                                position = vm.cursorPosition.value,
-                                inputPorts = listOf("File", "PSI element"),
-                                outputPorts = listOf("Snippet"),
-                                content = ElementToSnippetConverter
-                            )))
-                        })
-                )
+                ContextItems(vm, applyChanges)
             }) {
                 Box(Modifier.fillMaxSize()) {
                     for (node in vm.nodes.value) {
@@ -121,6 +48,108 @@ fun Workspace(vm: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit) {
         }
     }
 }
+
+private fun ContextItems(
+    vm: GraphVM,
+    applyChanges: (changes: List<GraphChange>) -> Unit
+) = listOf(
+    ContextMenuItem(
+        label = "AI transformer",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("AI transformer")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("Text"),
+                        outputPorts = listOf("Output"),
+                        content = AITransformer("My prompt")
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Input PSI element",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Input PSI element")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf(),
+                        outputPorts = listOf("File", "PSI element"),
+                        content = InputElement
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Find usages",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Find usages")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("PSI definition"),
+                        outputPorts = listOf("File", "PSI reference"),
+                        content = FindUsages
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Diff converter",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Diff converter")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("File", "New text"),
+                        outputPorts = listOf("Diff"),
+                        content = DiffMaker
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Diff applier",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Diff applier")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("Diff"),
+                        outputPorts = listOf(),
+                        content = DiffApplier
+                    )
+                )
+            )
+        }),
+    ContextMenuItem(
+        label = "Element to snippet converter",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("Element to snippet converter")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("File", "PSI element"),
+                        outputPorts = listOf("Snippet"),
+                        content = ElementToSnippetConverter
+                    )
+                )
+            )
+        })
+)
 
 @Composable
 private fun Edges(vm: GraphVM) {
