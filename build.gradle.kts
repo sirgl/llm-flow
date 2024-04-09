@@ -20,6 +20,7 @@ intellij {
 repositories {
     mavenCentral()
     maven("https://packages.jetbrains.team/maven/p/kpm/public")
+    maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public/")
 
 }
 
@@ -42,6 +43,10 @@ dependencies {
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.8.1")
     implementation(compose.desktop.currentOs)
     implementation("io.lacuna:bifurcan:0.2.0-alpha7")
+    implementation("ai.grazie.api:api-gateway-client-jvm:0.3.62")
+    implementation("ai.grazie.client:client-ktor-jvm:0.3.62")
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }
 
 tasks {
