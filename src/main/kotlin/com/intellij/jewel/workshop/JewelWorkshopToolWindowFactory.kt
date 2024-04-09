@@ -1,6 +1,6 @@
 package com.intellij.jewel.workshop
 
-import com.intellij.jewel.workshop.ui.components.GraphPanel
+import newImpl.ui.GraphPanel
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -10,7 +10,7 @@ import org.jetbrains.jewel.bridge.theme.SwingBridgeTheme
 
 class JewelWorkshopToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        toolWindow.addComposeTab("Compose tab") {
+        toolWindow.addComposeTab("Refactoring") {
             SwingBridgeTheme {
                 GraphPanel()
             }

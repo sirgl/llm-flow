@@ -7,7 +7,7 @@
 
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Jewel Workshop"
+        <toolWindow id="AI refactorings"
                     anchor="bottom"
                     secondary="false"
                     canCloseContents="true"

@@ -24,7 +24,7 @@ import org.jetbrains.jewel.ui.component.Text
 @Composable
 fun Workspace(vm: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit) {
     Box(
-        Modifier.fillMaxSize()
+        Modifier.fillMaxHeight().width(1000.dp)
             .onPointerEvent(eventType = PointerEventType.Move, onEvent = {
                 vm.cursorPosition.value = it.changes.first().position
             })
