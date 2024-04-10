@@ -25,7 +25,7 @@ suspend fun callToChat() {
 
     val chatResponseStream = client.llm().v6().chat {
         prompt = LLMPromptID("pizza_prompt")
-        profile = GoogleProfileIDs.Chat.GeminiPro1_5
+        profile = GoogleProfileIDs.Chat.GeminiPro
         messages {
             user("""
 You are an autonomous agent in IDE.
@@ -84,7 +84,7 @@ $snippet
         Response:
         {  "reasoning" : "Replacement requires only handling of class name.", "replacement" : "2 class B {\n 3 }" }
         
-        Remember - answer only in JSON, no explanations in plain text, no ``` in the code.
+        Remember - answer only in JSON, no explanations in plain text, no ``` in the code. Do NOT emit markdown
         Start with '{'.
     """.trimIndent()
 }
@@ -149,7 +149,13 @@ suspend fun getResponseWithRetries(prompt: String, maxRetries: Int = 3): Result?
             val jsonResult = withTimeoutOrNull(10000) {
                 // use launch to call the function in separate coroutine with an associated job
                 scope.launch {
-                    result = parseResult(requestLLM(prompt))
+                    try {
+                        val jsonMaybe = requestLLM(prompt)
+                        val json = extractJson(jsonMaybe)
+                        result = parseResult(json)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }.join() // join will suspend the coroutine until the launched coroutine completes
             }
 
@@ -169,25 +175,36 @@ suspend fun getResponseWithRetries(prompt: String, maxRetries: Int = 3): Result?
     return null
 }
 
+fun extractJson(markdown: String): String {
+    val regex = "^```\\n?json\\n?(.*)\\n?```$".toRegex(setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.MULTILINE))
+    val matchResult = regex.find(markdown)
+    return if (matchResult != null) {
+        matchResult.groups[1]?.value?.trim() ?: ""
+    } else {
+        markdown
+    }
+}
+
 
 fun main() {
-    val prompt = getPrompt(
-        """
-                21            return CachedValuesManager.getCachedValue(file) {
-                22                val importAliases = file.importDirectives.mapNotNull { it.aliasName }.toSet()
-                23                val map = ConcurrentFactoryMap.createMap<String, Boolean> { s ->
-                24                    s in importAliases || KotlinTypeAliasShortNameIndex.get(s, project, file.resolveScope).isNotEmpty()
-                25                }
-                26                Result.create<ConcurrentMap<String, Boolean>>(map, OuterModelsModificationTrackerManager.getTracker(project))
-                27            }
-            """.trimIndent(), "Extract OuterModelsModificationTrackerManager expression into a variable."
-    )
-    println(prompt)
-    runBlocking {
-        println(
-            getResponseWithRetries(
-                prompt
-            )?.replacement
-        )
-    }
+    println(extractJson("```json {} ```"))
+//    val prompt = getPrompt(
+//        """
+//                21            return CachedValuesManager.getCachedValue(file) {
+//                22                val importAliases = file.importDirectives.mapNotNull { it.aliasName }.toSet()
+//                23                val map = ConcurrentFactoryMap.createMap<String, Boolean> { s ->
+//                24                    s in importAliases || KotlinTypeAliasShortNameIndex.get(s, project, file.resolveScope).isNotEmpty()
+//                25                }
+//                26                Result.create<ConcurrentMap<String, Boolean>>(map, OuterModelsModificationTrackerManager.getTracker(project))
+//                27            }
+//            """.trimIndent(), "Extract OuterModelsModificationTrackerManager expression into a variable."
+//    )
+//    println(prompt)
+//    runBlocking {
+//        println(
+//            getResponseWithRetries(
+//                prompt
+//            )?.replacement
+//        )
+//    }
 }

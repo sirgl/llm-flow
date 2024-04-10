@@ -2,6 +2,11 @@
   <configuration default="false" name="Run IDE" type="GradleRunConfiguration" factoryName="Gradle">
     <log_file alias="idea.log" path="$PROJECT_DIR$/build/idea-sandbox/system/log/idea.log" />
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="Grazie-Auth-Application-JWT" value="eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJHcmF6aWUgQXV0aGVudGljYXRpb24iLCJ1aWQiOiI3NjBhODQ4Ny0zZDBlLTQ0ODUtOWQwZC0xY2I0ZDIzMDExMGMiLCJ0eXBlIjoiY3VzdG9tIiwibGljZW5zZSI6ImN1c3RvbV9hcHA6Yjg1ZjQ1OTctOTEwOS00NjAwLWExOTYtMTIxYmMxMGExYmZjIiwibGljZW5zZV90eXBlIjoiamV0YnJhaW5zLWFpLmFwcGxpY2F0aW9uLnN0YW5kYXJkIiwiZXhwIjoxNzEyOTI3ODk0fQ.QE1ssVCvrWzbveYSwvRffnwQQJ9JbLJZZi08HpWSjEJrMKt8pRWxnQPLbMGZ-2UGqDhh5RQ_1GgLjWmSrgaYbnJ_zwnHcdPrWa0PtagCQ3TTFsxKkmzdhzUj-hR9C_9hHY1jtzvi8MqQfA7KMm6wNt78PWvVH21vYT2b-qLjlOs1FAEzBbuEVk0iGrtcJNWFw7x_7B_xZRlfL2zjgY05KjIP4H6Timp9srWVhyAwClodm7eDtt2MgXvQGaLB__jSIB58X0jol53zFYgDAOYl2eNMtPcB_wkAbzsWifUzgff8p1_k-woljWbcdDJrbCZY9z9wsdY0UCdCvQmEwZydDg" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />

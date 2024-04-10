@@ -1,11 +1,18 @@
 package newImpl.model.execution
 
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.parents
+import kotlinx.coroutines.runBlocking
+import newImpl.getPrompt
+import newImpl.getResponseWithRetries
 import java.util.*
 import kotlin.random.Random
 
@@ -128,11 +135,45 @@ class PrintFunction : NodeFunction(listOf()) {
     }
 }
 
-data class LLmFunction(val prompt: String, val llm: LLM) : NodeFunction(listOf()) {
+data class LLmSnippetTransformer(val prompt: String) : NodeFunction(listOf(OUTPUT_SNIPPET)) {
+    companion object {
+        const val INPUT_SNIPPET: String = "Text"
+        const val OUTPUT_SNIPPET: String = "Output"
+    }
     override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult {
-        TODO()
+        val value = inputs[INPUT_SNIPPET] as SnippetValue
+        val finalPrompt = getPrompt(value.textWithLineNumbers, prompt)
+        println("Prompt: $prompt")
+        val replacement = runBlocking {
+            getResponseWithRetries(
+                finalPrompt, maxRetries = 5
+            )?.replacement
+        } ?: error("LLM failed")
+        return FunctionResult(mapOf(OUTPUT_SNIPPET to SnippetValue(replacement, value.range, value.file)), true)
     }
 }
+
+data class FileSwitch(val extension: String) : NodeFunction(listOf()) {
+    companion object {
+        const val INPUT_SNIPPET: String = "snippet"
+        const val OUTPUT_TARGET_FILE_SNIPPET: String = "snippet"
+        const val OUTPUT_NON_TARGET_FILE_SNIPPET: String = "snippet"
+    }
+    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
+        TODO("Not yet implemented")
+    }
+}
+
+//data class AllInheritors(val extension: String) : NodeFunction(listOf()) {
+//    companion object {
+//        const val INPUT_SNIPPET: String = "snippet"
+//        const val OUTPUT_TARGET_FILE_SNIPPET: String = "snippet"
+//        const val OUTPUT_NON_TARGET_FILE_SNIPPET: String = "snippet"
+//    }
+//    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
+//        TODO("Not yet implemented")
+//    }
+//}
 
 class InputElementFunction(private val pointer: SmartPsiElementPointer<PsiElement>) :
     NodeFunction(listOf(OUTPUT_ELEMENT)) {
@@ -195,17 +236,19 @@ class SnippetMakerFunction : NodeFunction(listOf(OUTPUT_TEXT)) {
         const val INPUT_ELEMENT = "PSI element"
         const val OUTPUT_TEXT = "Snippet"
     }
-    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
-        val element = (inputs[INPUT_ELEMENT] as PsiElementValue).pointer.element!!
-        val snippet = getTextWithSurroundingLines(element)
-        return FunctionResult(mapOf(OUTPUT_TEXT to StringValue(snippet)), true)
+    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult {
+        val pointer = (inputs[INPUT_ELEMENT] as PsiElementValue).pointer
+        val element = pointer.element!!
+        val virtualFile = pointer.virtualFile
+        val (textWithLineNumbers, range) = getTextWithSurroundingLines(element)
+        return FunctionResult(mapOf(OUTPUT_TEXT to SnippetValue(textWithLineNumbers, range, virtualFile)), true)
     }
 
 
-    private fun getTextWithSurroundingLines(element: PsiElement, numberOfLines: Int = 5): String {
+    private fun getTextWithSurroundingLines(element: PsiElement, numberOfLines: Int = 5): Pair<String, TextRange> {
         // Fetch the document
         val documentManager = PsiDocumentManager.getInstance(element.project)
-        val document = documentManager.getDocument(element.containingFile) ?: return ""
+        val document = documentManager.getDocument(element.containingFile) ?: error("Not found document")
 
         // Extract line numbers
         val elementLine = document.getLineNumber(element.textOffset)
@@ -221,14 +264,50 @@ class SnippetMakerFunction : NodeFunction(listOf(OUTPUT_TEXT)) {
 
         // Find the text within the calculated range
         val range = TextRange(startOffset, endOffset)
-        return document.getText(range)
+        val text = document.getText(range)
+
+        // Calculate padding for line numbers
+        val lineNumbers = (startLine..endLine).toList()
+        val maxLineNumberLength = lineNumbers.maxOrNull().toString().length
+
+        // Create prefixes with line numbers
+        val lineNumberPrefixes = lineNumbers.map { it.toString().padEnd(maxLineNumberLength) }
+
+        // Add line numbers to lines
+        return text.lines().zip(lineNumberPrefixes) { line, number -> "$number: $line" }.joinToString("\n") to range
     }
 
 }
 
-class LLM {
-    fun request(prompt: String): String {
-        TODO()
+class SnippetApplier(private val project: Project) : NodeFunction(listOf()) {
+    companion object {
+        const val INPUT_SNIPPET = "PSI element"
+    }
+
+    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
+        val snippetValue = inputs[INPUT_SNIPPET] as SnippetValue
+        val textWithoutLineNumbers = removeLineNumbers(snippetValue.textWithLineNumbers)
+
+        replaceRangeWithText(snippetValue.range, textWithoutLineNumbers, snippetValue.file)
+
+        return null
+    }
+
+    private fun replaceRangeWithText(range: TextRange, newText: String, file: VirtualFile) {
+        val documentManager = FileDocumentManager.getInstance()
+        val document = documentManager.getDocument(file) ?: return
+
+        WriteCommandAction.runWriteCommandAction(project) {
+            document.replaceString(range.startOffset, range.endOffset, newText)
+        }
+    }
+
+    private fun removeLineNumbers(text: String): String {
+        // Regular expression to find and remove line numbers
+        val regex = Regex("""^\d+\s*:\s""")
+        return text.lineSequence()
+            .map { it.replace(regex, "") } // replace line numbers with empty strings
+            .joinToString("\n") // join lines back together
     }
 }
 
@@ -275,6 +354,6 @@ sealed class ExecutionValue
 
 data class StringValue(val value: String) : ExecutionValue()
 
-data class ListValue(val values: List<ExecutionValue>) : ExecutionValue()
-
 data class PsiElementValue(val pointer: SmartPsiElementPointer<PsiElement>) : ExecutionValue()
+
+data class SnippetValue(val textWithLineNumbers: String, val range: TextRange, val file: VirtualFile) : ExecutionValue()

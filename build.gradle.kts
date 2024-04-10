@@ -43,8 +43,12 @@ dependencies {
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.8.1")
     implementation(compose.desktop.currentOs)
     implementation("io.lacuna:bifurcan:0.2.0-alpha7")
-    implementation("ai.grazie.api:api-gateway-client-jvm:0.3.62")
-    implementation("ai.grazie.client:client-ktor-jvm:0.3.62")
+    implementation("ai.grazie.api:api-gateway-client-jvm:0.3.62"){
+        exclude("org.slf4j")
+    }
+    implementation("ai.grazie.client:client-ktor-jvm:0.3.62"){
+        exclude("org.slf4j")
+    }
     implementation("com.google.code.gson:gson:2.10.1")
 
 }

@@ -42,6 +42,15 @@ fun convertToExecutionGraph(graph: GraphSnapshot, currentElement: SmartPsiElemen
                     mutableMapOf(SnippetMakerFunction.OUTPUT_TEXT to outputId)
                 )
             }
+            is AITransformer -> {
+                val function = LLmSnippetTransformer(content.prompt)
+                val outputId = getSingleOutputId(graph, node, fromPortIdToEdge)
+                executionNodes[node.id] = ExecutionNode(
+                    function,
+                    mutableMapOf(LLmSnippetTransformer.INPUT_SNIPPET to null),
+                    mutableMapOf(LLmSnippetTransformer.OUTPUT_SNIPPET to outputId)
+                )
+            }
 //            is FindUsages -> {
 //                val FindUsage
 //            }

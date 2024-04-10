@@ -35,7 +35,7 @@ fun Workspace(vm: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit) {
                 Text("Nodes: " + vm.nodes.value.size, fontSize = 10.sp)
             }
             ContextMenuArea(items = {
-                ContextItems(vm, applyChanges)
+                getContextItems(vm, applyChanges)
             }) {
                 Box(Modifier.fillMaxSize()) {
                     for (node in vm.nodes.value) {
@@ -49,7 +49,7 @@ fun Workspace(vm: GraphVM, applyChanges: (changes: List<GraphChange>) -> Unit) {
     }
 }
 
-private fun ContextItems(
+private fun getContextItems(
     vm: GraphVM,
     applyChanges: (changes: List<GraphChange>) -> Unit
 ) = listOf(
