@@ -1,11 +1,12 @@
 package newImpl.model.execution
 
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SmartPsiElementPointer
 import newImpl.model.*
 import java.util.UUID
 
-fun convertToExecutionGraph(graph: GraphSnapshot, currentElement: SmartPsiElementPointer<PsiElement>) : ExecutionGraph {
+fun convertToExecutionGraph(project: Project, graph: GraphSnapshot, currentElement: SmartPsiElementPointer<PsiElement>) : ExecutionGraph {
     val executionNodes = mutableMapOf<UUID, ExecutionNode>()
     val fromPortIdToEdge = mutableMapOf<UUID, MutableList<Edge>>()
     for (edge in graph.edges.values) {
@@ -51,13 +52,10 @@ fun convertToExecutionGraph(graph: GraphSnapshot, currentElement: SmartPsiElemen
                     mutableMapOf(LLmSnippetTransformer.OUTPUT_SNIPPET to outputId)
                 )
             }
-//            is FindUsages -> {
-//                val FindUsage
-//            }
-//            is DiffApplier -> {
-//                val function = PrintFunction()
-//                executionNodes[node.id] = ExecutionNode(function, mutableMapOf("Diff" to ), outputs)
-//            }
+            is DiffApplier -> {
+                val function = SnippetApplier(project)
+                executionNodes[node.id] = ExecutionNode(function, mutableMapOf(SnippetApplier.INPUT_SNIPPET to null), mutableMapOf())
+            }
             else -> TODO()
         }
     }

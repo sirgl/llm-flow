@@ -134,15 +134,15 @@ private fun getContextItems(
             )
         }),
     ContextMenuItem(
-        label = "Diff applier",
+        label = "Snippet applier",
         onClick = {
-            val nodeName = vm.graph.current.suggestNewNodeName("Diff applier")
+            val nodeName = vm.graph.current.suggestNewNodeName("Snippet applier")
             applyChanges(
                 listOf(
                     AddNode(
                         name = nodeName,
                         position = vm.cursorPosition.value,
-                        inputPorts = listOf("Diff"),
+                        inputPorts = listOf("Snippet"),
                         outputPorts = listOf(),
                         content = DiffApplier
                     )

@@ -1,5 +1,7 @@
 package newImpl.model.execution
 
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.EmptyProgressIndicator
@@ -10,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.parents
+import com.intellij.util.concurrency.AppExecutorUtil
 import kotlinx.coroutines.runBlocking
 import newImpl.getPrompt
 import newImpl.getResponseWithRetries
@@ -281,7 +284,7 @@ class SnippetMakerFunction : NodeFunction(listOf(OUTPUT_TEXT)) {
 
 class SnippetApplier(private val project: Project) : NodeFunction(listOf()) {
     companion object {
-        const val INPUT_SNIPPET = "PSI element"
+        const val INPUT_SNIPPET = "Snippet"
     }
 
     override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
@@ -294,11 +297,14 @@ class SnippetApplier(private val project: Project) : NodeFunction(listOf()) {
     }
 
     private fun replaceRangeWithText(range: TextRange, newText: String, file: VirtualFile) {
-        val documentManager = FileDocumentManager.getInstance()
-        val document = documentManager.getDocument(file) ?: return
-
-        WriteCommandAction.runWriteCommandAction(project) {
-            document.replaceString(range.startOffset, range.endOffset, newText)
+        invokeLater {
+            runWriteAction {
+                val documentManager = FileDocumentManager.getInstance()
+                val document = documentManager.getDocument(file) ?: error("Not found document")
+                WriteCommandAction.runWriteCommandAction(project) {
+                    document.replaceString(range.startOffset, range.endOffset, newText)
+                }
+            }
         }
     }
 

@@ -63,7 +63,7 @@ fun GraphRightPanel(graph: Graph, project: Project) {
                                         val pointer = project.service<CurrentElementService>().currentElement
                                         if (pointer == null) error("Need to call AddInputAction before")
 
-                                        val executionGraph = convertToExecutionGraph(graph.current, pointer)
+                                        val executionGraph = convertToExecutionGraph(project, graph.current, pointer)
                                         executionGraph.execute()
                                     }
                                 }
