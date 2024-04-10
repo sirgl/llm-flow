@@ -17,20 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import newImpl.model.AITransformer
-import newImpl.model.GraphChange
-import newImpl.model.ReplaceContent
-import newImpl.model.UpdateNode
+import newImpl.model.*
+import newImpl.model.execution.FileSwitch
 import newImpl.vm.GraphVM
 import newImpl.vm.InputPortVM
 import newImpl.vm.NodeVM
 import newImpl.vm.OutputPortVM
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
-import org.jetbrains.jewel.ui.component.DefaultButton
-import org.jetbrains.jewel.ui.component.Divider
-import org.jetbrains.jewel.ui.component.Text
-import org.jetbrains.jewel.ui.component.TextField
+import org.jetbrains.jewel.ui.component.*
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -85,12 +80,26 @@ fun Node(
                 if (content is AITransformer) {
                     // TODO here should be just a link to edit
                     var prompt by remember { mutableStateOf(content.prompt) }
-                    TextField(
+                    Text("Prompt")
+                    TextArea(
                         value = prompt,
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 10.dp),
-                        onValueChange = { prompt = it })
+
+                        modifier = Modifier.fillMaxWidth().height(150.dp).padding(top = 10.dp, bottom = 10.dp),
+                        onValueChange = { prompt = it },)
                     DefaultButton(modifier = Modifier.fillMaxWidth(), onClick = {
                         applyChanges(listOf(ReplaceContent(vm.nodeId, AITransformer(prompt))))
+                    }) {
+                        Text("Save")
+                    }
+                } else if (content is FileSwitchContent) {
+                    var extension by remember { mutableStateOf(content.fileExtension) }
+                    Text("Extension")
+                    TextField(
+                        value = extension,
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 10.dp),
+                        onValueChange = { extension = it })
+                    DefaultButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                        applyChanges(listOf(ReplaceContent(vm.nodeId, FileSwitchContent(extension))))
                     }) {
                         Text("Save")
                     }

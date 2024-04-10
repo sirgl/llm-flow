@@ -113,3 +113,5 @@ data object DiffMaker : NodeContent()
 
 data object DiffApplier : NodeContent()
 
+data class FileSwitchContent(val fileExtension: String) : NodeContent()
+

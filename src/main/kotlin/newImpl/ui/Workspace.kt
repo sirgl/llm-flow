@@ -164,6 +164,22 @@ private fun getContextItems(
                     )
                 )
             )
+        }),
+    ContextMenuItem(
+        label = "File switch",
+        onClick = {
+            val nodeName = vm.graph.current.suggestNewNodeName("File switch")
+            applyChanges(
+                listOf(
+                    AddNode(
+                        name = nodeName,
+                        position = vm.cursorPosition.value,
+                        inputPorts = listOf("Snippet"),
+                        outputPorts = listOf("Target snippet", "Other snippet"),
+                        content = FileSwitchContent("java")
+                    )
+                )
+            )
         })
 )
 

@@ -158,25 +158,17 @@ data class LLmSnippetTransformer(val prompt: String) : NodeFunction(listOf(OUTPU
 
 data class FileSwitch(val extension: String) : NodeFunction(listOf()) {
     companion object {
-        const val INPUT_SNIPPET: String = "snippet"
-        const val OUTPUT_TARGET_FILE_SNIPPET: String = "snippet"
-        const val OUTPUT_NON_TARGET_FILE_SNIPPET: String = "snippet"
+        const val INPUT_SNIPPET: String = "Snippet"
+        const val OUTPUT_TARGET_FILE_SNIPPET: String = "Target snippet"
+        const val OUTPUT_NON_TARGET_FILE_SNIPPET: String = "Other snippet"
     }
-    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
-        TODO("Not yet implemented")
+    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult {
+        val snippetValue = inputs[INPUT_SNIPPET] as SnippetValue
+        val isTarget = snippetValue.file.name.endsWith(extension)
+        val outputName = if (isTarget) OUTPUT_TARGET_FILE_SNIPPET else OUTPUT_NON_TARGET_FILE_SNIPPET
+        return FunctionResult(mapOf(outputName to snippetValue), true)
     }
 }
-
-//data class AllInheritors(val extension: String) : NodeFunction(listOf()) {
-//    companion object {
-//        const val INPUT_SNIPPET: String = "snippet"
-//        const val OUTPUT_TARGET_FILE_SNIPPET: String = "snippet"
-//        const val OUTPUT_NON_TARGET_FILE_SNIPPET: String = "snippet"
-//    }
-//    override fun execute(inputs: Map<String, ExecutionValue>): FunctionResult? {
-//        TODO("Not yet implemented")
-//    }
-//}
 
 class InputElementFunction(private val pointer: SmartPsiElementPointer<PsiElement>) :
     NodeFunction(listOf(OUTPUT_ELEMENT)) {
