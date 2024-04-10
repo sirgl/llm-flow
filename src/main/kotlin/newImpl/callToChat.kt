@@ -84,9 +84,7 @@ $snippet
         Response:
         {  "reasoning" : "Replacement requires only handling of class name.", "replacement" : "2 class B {\n 3 }" }
         
-        Remember - answer only in JSON, no explanations in plain text.
-        You can't request anything else, you need to do the best you can with the given data.
-        Do the task, the snippet is provided in the beginning.
+        Remember - answer only in JSON, no explanations in plain text, no ``` in the code.
         Start with '{'.
     """.trimIndent()
 }
@@ -140,7 +138,6 @@ suspend fun getResponseWithRetries(prompt: String, maxRetries: Int = 3): Result?
     val scope = CoroutineScope(Dispatchers.IO)
 
     // Convert prompt to required format
-    val formattedPrompt = getPrompt("<your snippet>", "<your task>")
 
     var retries = 0
     while (retries < maxRetries) {
@@ -152,7 +149,7 @@ suspend fun getResponseWithRetries(prompt: String, maxRetries: Int = 3): Result?
             val jsonResult = withTimeoutOrNull(10000) {
                 // use launch to call the function in separate coroutine with an associated job
                 scope.launch {
-                    result = parseResult(requestLLM(formattedPrompt))
+                    result = parseResult(requestLLM(prompt))
                 }.join() // join will suspend the coroutine until the launched coroutine completes
             }
 
