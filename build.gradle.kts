@@ -50,6 +50,8 @@ dependencies {
         exclude("org.slf4j")
     }
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("dev.langchain4j:langchain4j-open-ai:0.30.0")
+    implementation("io.lacuna:bifurcan:0.2.0-alpha7")
 
 }
 
