@@ -13,7 +13,10 @@ class ExecutionSectionLog(
     val entries: IList<ExecutionEntry>,
     val task: String, // TODO it is not the case for tools request
     val responseFormat: String,
-)
+) {
+    fun withEntries(newEntries: IList<ExecutionEntry>) =
+        ExecutionSectionLog(sectionName, sectionType, newEntries, task, responseFormat)
+}
 
 enum class SectionType { // TODO likely classes are needed here
     Delegation,
@@ -24,7 +27,7 @@ enum class SectionType { // TODO likely classes are needed here
 sealed class ExecutionEntry
 
 class PlanningExecutionEntry(
-
+    val plan: List<String>
 ) : ExecutionEntry()
 
 class PlanningExecutionEntryRequest(

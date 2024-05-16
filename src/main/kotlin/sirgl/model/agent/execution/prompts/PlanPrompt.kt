@@ -1,4 +1,4 @@
-package sirgl.model.agent.execution
+package sirgl.model.agent.execution.prompts
 
 import kotlinx.serialization.Serializable
 import sirgl.model.agent.ParamSpec
@@ -20,6 +20,8 @@ class CrewMemberPromptData(
     val shortDescription: String
 )
 
+// TODO it would be better if this thing would be customizable - we would just provide a template and everything got inserted inside
+//  this way we would be able to
 fun composePlanPrompt(data: ListPlanPromptData): String {
     val toolsPrompt = composeToolsPrompt(data.tools)
     val delegationPrompt = composeDelegationPrompt(data.underlyingMembers)
